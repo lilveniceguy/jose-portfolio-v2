@@ -1,0 +1,20 @@
+{
+  "name": "jose-portfoliov2",
+  "private": true,
+  "scripts": {
+    "build:css": "npx tailwindcss -i ./assets/css/input.css -o ./dist/tailwind.css --minify",
+    "build:alpine": "node -e \"require('fs').copyFileSync('./node_modules/alpinejs/dist/cdn.min.js','./dist/alpine.min.js')\"",
+    "build:lucide": "node -e \"require('fs').copyFileSync('./node_modules/lucide/dist/umd/lucide.min.js','./dist/lucide.min.js')\"",
+    "build:js": "node -e \"require('fs').copyFileSync('./assets/js/app.js','./dist/app.js')\"",
+    "build": "npm run build:css && npm run build:alpine && npm run build:lucide && npm run build:js"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.17"
+  },
+  "dependencies": {
+    "alpinejs": "^3.14.9",
+    "lucide": "^0.541.0"
+  }
+}
