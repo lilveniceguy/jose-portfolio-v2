@@ -25,14 +25,39 @@
       <div class="space-y-6">
         <?php while ($experience_query->have_posts()) : $experience_query->the_post(); ?>
           <?php
-          $post_id   = get_the_ID();
-          $company   = get_the_title($post_id);
-          $position  = get_post_meta($post_id, 'jp_position_title', true);
-          $start     = get_post_meta($post_id, 'jp_date_start', true);
+          $post_id    = get_the_ID();
+          $company    = get_the_title($post_id);
+          $position   = get_post_meta($post_id, 'jp_position_title', true);
+          $location   = get_post_meta($post_id, 'jp_location', true);
+          $emp_type   = get_post_meta($post_id, 'jp_employment_type', true); // remote|hybrid|onsite
+          $job_type   = get_post_meta($post_id, 'jp_job_type', true); // full-time|contract etc (optional)
+          $start      = get_post_meta($post_id, 'jp_date_start', true);
           $is_current = (bool) get_post_meta($post_id, 'jp_is_current', true);
-          $end       = get_post_meta($post_id, 'jp_date_end', true);
-          $tags      = get_the_tags($post_id) ?: [];
-          $excerpt   = get_the_excerpt() ?: '';
+          $end        = get_post_meta($post_id, 'jp_date_end', true);
+          $tags       = get_the_tags($post_id) ?: [];
+
+          // Build description content from the post content, but skip the Job Detail block.
+          $raw_content = get_post_field('post_content', $post_id);
+          $blocks      = function_exists('parse_blocks') ? parse_blocks($raw_content) : [];
+          $desc_html   = '';
+
+          if (!empty($blocks)) {
+            foreach ($blocks as $block) {
+              if (!is_array($block)) continue;
+              if (!empty($block['blockName']) && $block['blockName'] === 'jose-portfolio/job-detail') {
+                continue; // avoid duplicating the job meta block
+              }
+
+              if (function_exists('render_block')) {
+                $desc_html .= render_block($block);
+              } elseif (isset($block['innerHTML'])) {
+                $desc_html .= $block['innerHTML'];
+              }
+            }
+          } else {
+            // Fallback: use the standard filtered content.
+            $desc_html = apply_filters('the_content', $raw_content);
+          }
 
           $fmt_date = function ($ymd) {
             if (!$ymd) return '';
@@ -46,37 +71,61 @@
             $date_label = $fmt_date($start) . ' - ' . ($is_current ? 'Present' : $fmt_date($end));
           }
 
-          // Limit tags to first 5, like the original template.
-          if (!empty($tags)) {
-            $tags = array_slice($tags, 0, 5);
-          }
+          $emp_label = '';
+          if ($emp_type === 'remote') $emp_label = 'Remote';
+          elseif ($emp_type === 'hybrid') $emp_label = 'Hybrid';
+          elseif ($emp_type === 'onsite') $emp_label = 'Onsite';
+
+          $job_type_label = $job_type ? ucfirst($job_type) : 'Full-time';
           ?>
 
           <div class="relative pl-8 border-l-2 border-border/40 pb-8 last:pb-0">
             <div class="absolute left-0 top-0 -translate-x-1/2 w-3 h-3 rounded-full bg-primary"></div>
 
             <div class="p-6 rounded-lg border border-border/60 bg-card/40 hover:border-primary/30 transition-all">
-              <div class="flex flex-wrap items-start justify-between gap-4 mb-4">
+              <?php if ($date_label) : ?>
+                <div class="flex flex-wrap items-center gap-2 mb-3 font-mono text-xs text-muted-foreground">
+                  <span class="inline-flex items-center rounded-full bg-secondary/60 px-3 py-1 border border-border/60">
+                    <?php echo esc_html($date_label); ?>
+                  </span>
+                  <span class="inline-flex items-center rounded-full bg-secondary/40 px-3 py-1 border border-border/40">
+                    Experience
+                  </span>
+                  <?php if ($job_type_label) : ?>
+                    <span class="inline-flex items-center rounded-full bg-secondary/40 px-3 py-1 border border-border/40">
+                      <?php echo esc_html($job_type_label); ?>
+                    </span>
+                  <?php endif; ?>
+                </div>
+              <?php endif; ?>
+
+              <div class="flex flex-wrap items-start justify-between gap-4">
                 <div>
                   <h3 class="text-xl font-semibold text-foreground">
                     <?php echo esc_html($position ?: $company); ?>
                   </h3>
-                  <p class="font-mono text-sm text-primary">
-                    <?php echo esc_html($company); ?>
+                  <p class="font-mono text-sm text-primary flex flex-wrap items-center gap-1">
+                    <span><?php echo esc_html($company); ?></span>
+                    <?php if ($location || $emp_label) : ?>
+                      <span class="text-muted-foreground">•</span>
+                    <?php endif; ?>
+                    <?php if ($location) : ?>
+                      <span class="text-muted-foreground"><?php echo esc_html($location); ?></span>
+                    <?php endif; ?>
+                    <?php if ($location && $emp_label) : ?>
+                      <span class="text-muted-foreground">•</span>
+                    <?php endif; ?>
+                    <?php if ($emp_label) : ?>
+                      <span class="text-muted-foreground"><?php echo esc_html($emp_label); ?></span>
+                    <?php endif; ?>
                   </p>
                 </div>
-
-                <?php if ($date_label) : ?>
-                  <span class="font-mono text-xs text-muted-foreground px-3 py-1 rounded-full bg-secondary">
-                    <?php echo esc_html($date_label); ?>
-                  </span>
-                <?php endif; ?>
               </div>
 
-              <?php if ($excerpt) : ?>
-                <p class="text-muted-foreground leading-relaxed mb-4">
-                  <?php echo esc_html($excerpt); ?>
-                </p>
+              <?php if ($desc_html) : ?>
+                <div class="text-muted-foreground leading-relaxed mb-4 text-sm">
+                  <?php echo $desc_html; // already filtered / contains HTML ?>
+                </div>
               <?php endif; ?>
 
               <?php if (!empty($tags)) : ?>
