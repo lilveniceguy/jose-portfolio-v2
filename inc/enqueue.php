@@ -19,7 +19,7 @@ add_action('wp_enqueue_scripts', function () {
     );
   }
 
-  // App first (HEAD) so Alpine components are registered before Alpine boots
+  // App first (HEAD) so the store and helpers exist before Alpine boots
   if (file_exists($app)) {
     wp_enqueue_script(
       'jose-portfoliov2-app',
@@ -28,6 +28,15 @@ add_action('wp_enqueue_scripts', function () {
       filemtime($app),
       false
     );
+
+    // Localize AFTER the script is enqueued and with the SAME handle
+    if (function_exists('jose_portfolio_build_ui_payload')) {
+      $ui = jose_portfolio_build_ui_payload();
+
+      wp_localize_script('jose-portfoliov2-app', 'JOSE_PORTFOLIO', [
+        'ui' => $ui,
+      ]);
+    }
   }
 
   // Alpine in footer

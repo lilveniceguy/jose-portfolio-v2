@@ -56,10 +56,11 @@ document.addEventListener('alpine:init', () => {
     ],
 
     // Keep your data as-is for now, later we can swap to WP REST.
-    skills: [/* ... paste from your HTML ... */],
-    systems: [/* ... */],
+    ui: (window.JOSE_PORTFOLIO && window.JOSE_PORTFOLIO.ui) ? window.JOSE_PORTFOLIO.ui : {},
+    get skills() { return Array.isArray(this.ui.skills) ? this.ui.skills : []; },
+    get systems() { return Array.isArray(this.ui.systems) ? this.ui.systems : []; },
+    get posts() { return Array.isArray(this.ui.posts) ? this.ui.posts : []; },
     caseStudies: {/* ... */},
-    posts: [/* ... */],
     principles: [/* ... */],
     metrics: [/* ... */],
     creative: [/* ... */],
@@ -132,16 +133,17 @@ document.addEventListener('alpine:init', () => {
     countSkill(slug) { return this.posts.filter(p => p.tags.includes(slug)).length; },
     skillPosts(slug) { return this.posts.filter(p => p.tags.includes(slug)); },
 
-    openSkill(s) {
-      this.selSkill = s;
-      this.skillOpen = true;
-      this.$nextTick(() => window.lucide && window.lucide.createIcons && window.lucide.createIcons());
-    },
+    openTag(type, slug) {
+        const list = (type === 'system') ? this.systems : this.skills;
+        const item = list.find(t => t && t.slug === slug) || { slug: slug, label: slug, intro: '' };
 
-    openSystem(s) {
-      this.selSystem = s;
-      this.sysOpen = true;
-      this.$nextTick(() => window.lucide && window.lucide.createIcons && window.lucide.createIcons());
+        this.selSkill = (type === 'skill') ? item : null;
+        this.selSystem = (type === 'system') ? item : null;
+
+        this.skillOpen = (type === 'skill');
+        this.sysOpen = (type === 'system');
+
+        this.$nextTick(() => window.lucide && window.lucide.createIcons && window.lucide.createIcons());
     },
   }));
 });
