@@ -1,0 +1,50 @@
+name: Deploy Theme to Server
+
+on:
+  push:
+    branches: [ main ] # change to master if you want
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build assets
+        run: npm run build
+
+      - name: Deploy via rsync over SSH
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_PORT: ${{ secrets.SSH_PORT }} # optional, default 22
+          REMOTE_DIR: /var/www/html/wp-content/themes/jose-portfoliov2/
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y rsync
+
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
+          ssh-keyscan -p ${SSH_PORT:-22} -H "$SSH_HOST" >> ~/.ssh/known_hosts
+
+          rsync -az --delete \
+            -e "ssh -p ${SSH_PORT:-22}" \
+            --exclude ".git/" \
+            --exclude "node_modules/" \
+            --exclude ".github/" \
+            --exclude ".env" \
+            --exclude "*.map" \
+            ./ "$SSH_USER@$SSH_HOST:$REMOTE_DIR"
