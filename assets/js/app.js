@@ -131,7 +131,15 @@ document.addEventListener('alpine:init', () => {
     },
 
     countSkill(slug) { return this.posts.filter(p => p.tags.includes(slug)).length; },
-    skillPosts(slug) { return this.posts.filter(p => p.tags.includes(slug)); },
+    skillPosts(slug) {
+      const withTag = this.posts.filter(p => p.tags.includes(slug));
+      return withTag.slice().sort((a, b) => {
+        const ad = (a.meta && (a.meta.jp_date_start || a.meta._date_start)) || a.date || '';
+        const bd = (b.meta && (b.meta.jp_date_start || b.meta._date_start)) || b.date || '';
+        if (ad === bd) return 0;
+        return ad < bd ? 1 : -1; // newest (largest date string) first
+      });
+    },
 
     openTag(type, slug) {
         const list = (type === 'system') ? this.systems : this.skills;
