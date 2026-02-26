@@ -6,7 +6,7 @@
   <div class="flex items-center">
     <div class="hidden lg:flex shrink-0 items-center gap-2 border-r border-border/60 px-4 py-3">
       <i data-lucide="zap" class="w-4 h-4 text-primary"></i>
-      <span class="font-mono text-xs uppercase tracking-widest text-foreground/80">Skills</span>
+      <span class="font-mono text-xs uppercase tracking-widest text-foreground/80">Skills </span>
     </div>
     <div class="flex-1 overflow-hidden py-1 relative" @mouseenter="sp=true" @mouseleave="sp=false">
       <div class="pointer-events-none absolute left-0 top-0 z-10 h-full w-16 bg-gradient-to-r from-background to-transparent"></div>
