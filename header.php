@@ -5,8 +5,18 @@
   <meta charset="<?php bloginfo('charset'); ?>">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#0F172A">
-
-  <title><?php wp_title('|', true, 'right'); ?></title>
+  <?php $description = "Senior full-stack engineer. Not just writing code — engineering systems that hold under pressure"; ?>
+  <title><?php echo bloginfo('name'); ?>  | <?php echo $description; ?></title>
+  <meta name="description" content="<?php echo $description; ?>">
+  <?php
+  $meta_keywords = '';
+  if (is_singular() && ($tags = get_the_tags())) {
+    $meta_keywords = implode(', ', wp_list_pluck($tags, 'name'));
+  } else {
+    $meta_keywords = 'full-stack engineer, web development, portfolio, PHP, JavaScript';
+  }
+  ?>
+  <meta name="keywords" content="<?php echo esc_attr($meta_keywords); ?>">
 
   <?php wp_head(); ?>
 </head>
