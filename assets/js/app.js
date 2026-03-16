@@ -51,7 +51,6 @@ document.addEventListener('alpine:init', () => {
       { id: 'credentials', label: 'Certs', icon: 'graduation-cap' },
       { id: 'scale', label: 'Scale', icon: 'activity' },
       { id: 'creative', label: 'Creative', icon: 'camera' },
-      { id: 'labs', label: 'Labs', icon: 'flask-conical' },
       { id: 'signal', label: 'Signal', icon: 'message-square' },
     ],
 
@@ -63,7 +62,6 @@ document.addEventListener('alpine:init', () => {
     caseStudies: {/* ... */},
     principles: [/* ... */],
     creative: [/* ... */],
-    labs: [/* ... */],
     metrics: [/* populated via PHP in scale.php */],
     credCats: [
       { slug: 'all', label: 'All' },

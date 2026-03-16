@@ -1,3 +1,7 @@
+    <?php
+    // Labs section temporarily hidden.
+    // To restore, re-enable the markup below.
+    /*
     <!-- LABS -->
     <section id="labs" class="min-h-screen py-32 px-6 lg:px-24">
       <div class="max-w-5xl mx-auto">
@@ -21,3 +25,5 @@
         </div>
       </div>
     </section>
+    */
+    ?>

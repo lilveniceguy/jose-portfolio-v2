@@ -18,6 +18,16 @@
   ?>
   <meta name="keywords" content="<?php echo esc_attr($meta_keywords); ?>">
 
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-QD2022KV6V"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-QD2022KV6V');
+  </script>
+
   <?php wp_head(); ?>
 </head>
 
