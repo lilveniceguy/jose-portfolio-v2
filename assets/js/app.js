@@ -62,9 +62,9 @@ document.addEventListener('alpine:init', () => {
     get posts() { return Array.isArray(this.ui.posts) ? this.ui.posts : []; },
     caseStudies: {/* ... */},
     principles: [/* ... */],
-    metrics: [/* ... */],
     creative: [/* ... */],
     labs: [/* ... */],
+    metrics: [/* populated via PHP in scale.php */],
     credCats: [
       { slug: 'all', label: 'All' },
       { slug: 'education', label: 'Education' },
